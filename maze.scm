@@ -46,7 +46,7 @@
 (define sites0 (build-list (/ (- XMAX 8) 2)
                            (lambda (i) (make-pos (+ (* i 2) 4) 2))))
 (define sites1 (build-list (/ (- XMAX 8) 2)
-                           (lambda (i) (make-pos (+ (* i 2) 4) (- YMAX 2)))))
+                           (lambda (i) (make-pos (+ (* i 2) 4) (- YMAX 2))))
 (define sites2 (build-list (/ (- YMAX 8) 2)
                            (lambda (j) (make-pos 2 (+ (* j 2) 4)))))
 (define sites3 (build-list (/ (- YMAX 8) 2)
@@ -55,7 +55,7 @@
 (define sites (foldr append '() (list sites0 sites1 sites2 sites3)))
 
 ;;;;;
-(define (add-site sites x y) (cons (make-pos x y) sites))
+(define (add-site sites x y) (cons (make-pos x y) sites)
 (define (cut-sites sites)
   (let ((r (random (length sites)))) (append (drop sites r) (take sites r))))
 (define dirtable '((0 1 2 3) (1 0 2 3) (1 2 0 3) (1 2 3 0)
@@ -97,4 +97,4 @@
 (big-bang (let* ((sites (cut-sites sites)) (site (car sites)))
             (make-maze-status maze scn sites (pos-x site) (pos-y site)))
           (on-draw (lambda (w) (maze-status-scn w)))
-          (on-tick extend-wall))
+          (on-tick extend-wall
