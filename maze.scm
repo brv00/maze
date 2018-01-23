@@ -1,8 +1,8 @@
-(define (list-set arr i x) (append (take arr i) (cons x (drop arr (++ i)))))
+(define (list-set lis i val) (append (take lis i) (cons val (drop lis (++ i)))))
 
-(define (maze-ref arr i j) (list-ref (list-ref arr i) j))
-(define (maze-set arr i j val)
-  (list-set arr i (list-set (list-ref arr i) j val)))
+(define (maze-ref maze x y) (list-ref (list-ref maze x) y))
+(define (maze-set maze x y val)
+  (list-set maze x (list-set (list-ref maze x) y val)))
 
 ;; 迷路の大きさ
 (define XMAX 80) (define YMAX 114)
