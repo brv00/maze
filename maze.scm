@@ -5,7 +5,7 @@
   (list-set maze x (list-set (list-ref maze x) y val)))
 
 ;; 迷路の大きさ
-(define XMAX 80) (define YMAX 114)
+(define XMAX 86) (define YMAX 124)
 
 ;;;;;
 (define outer-wall (build-list (+ YMAX 1) (lambda (y) 1)))
