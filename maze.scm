@@ -4,7 +4,7 @@
 (define (maze-set arr i j val)
   (list-set arr i (list-set (list-ref arr i) j val)))
 
-;; 迷路のサイズ
+;; 迷路の大きさ
 (define XMAX 80) (define YMAX 114)
 
 ;;;;;
@@ -46,7 +46,7 @@
 (define sites0 (build-list (/ (- XMAX 8) 2)
                            (lambda (i) (make-pos (+ (* i 2) 4) 2))))
 (define sites1 (build-list (/ (- XMAX 8) 2)
-                           (lambda (i) (make-pos (+ (* i 2) 4) (- YMAX 2))))
+                           (lambda (i) (make-pos (+ (* i 2) 4) (- YMAX 2)))))
 (define sites2 (build-list (/ (- YMAX 8) 2)
                            (lambda (j) (make-pos 2 (+ (* j 2) 4)))))
 (define sites3 (build-list (/ (- YMAX 8) 2)
@@ -55,7 +55,7 @@
 (define sites (foldr append '() (list sites0 sites1 sites2 sites3)))
 
 ;;;;;
-(define (add-site sites x y) (cons (make-pos x y) sites)
+(define (push-site sites x y) (cons (make-pos x y) sites))
 (define (cut-sites sites)
   (let ((r (random (length sites)))) (append (drop sites r) (take sites r))))
 (define dirtable '((0 1 2 3) (1 0 2 3) (1 2 0 3) (1 2 3 0)
@@ -76,25 +76,23 @@
     (lp (list-ref dirtable (random 24)))))
 
 ;;;;;
-(define-struct maze-status (maze scn sites x y))
+(define-struct maze-status (maze scn sites))
 
 (define (extend-wall w)
   (let ((maze (maze-status-maze w)) (scn (maze-status-scn w))
-        (sites (maze-status-sites w))
-        (x (maze-status-x w)) (y (maze-status-y w)))
+        (sites (maze-status-sites w)))
     (if (null? sites) w
-      (let-values (((x1 y1) (select-direction maze x y)))
-        (if x1
-          (let ((sites (add-site sites x1 y1))
-                (x0 (/ (+ x x1) 2)) (y0 (/ (+ y y1) 2)))
-            (make-maze-status (maze-set (maze-set maze x0 y0 1) x1 y1 1)
-                              (place-wall x1 y1 (place-wall x0 y0 scn))
-                              sites x1 y1))
-          (let* ((sites (cut-sites sites)) (site (car sites)))
-            (extend-wall (make-maze-status maze scn (cdr sites)
-                                           (pos-x site) (pos-y site)))))))))
+      (let ((x (pos-x (car sites))) (y (pos-y (car sites))))
+        (let-values (((x1 y1) (select-direction maze x y)))
+          (if x1
+            (let ((sites (push-site sites x1 y1))
+                  (x0 (/ (+ x x1) 2)) (y0 (/ (+ y y1) 2)))
+              (make-maze-status (maze-set (maze-set maze x0 y0 1) x1 y1 1)
+                                (place-wall x1 y1 (place-wall x0 y0 scn))
+                                sites))
+            (extend-wall (make-maze-status maze scn
+					   (cut-sites (cdr sites))))))))))
 
-(big-bang (let* ((sites (cut-sites sites)) (site (car sites)))
-            (make-maze-status maze scn sites (pos-x site) (pos-y site)))
+(big-bang (make-maze-status maze scn (cut-sites sites))
           (on-draw (lambda (w) (maze-status-scn w)))
-          (on-tick extend-wall
+          (on-tick extend-wall))
