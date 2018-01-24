@@ -8,13 +8,13 @@
 (define XMAX 86) (define YMAX 124)
 
 ;;;;;
-(define outer-wall (build-list (+ YMAX 1) (lambda (y) 1)))
-(define field
+(define lr-wall (build-list (+ YMAX 1) (lambda (y) 1)))
+(define u-wall-field-d-wall
   (append '(1 1 1) (append (build-list (- YMAX 5) (lambda (y) 0)) '(1 1 1))))
 (define maze0
-  (append (list outer-wall outer-wall outer-wall)
-          (append (build-list (- XMAX 5) (lambda (x) field))
-                  (list outer-wall outer-wall outer-wall))))
+  (append (list lr-wall lr-wall lr-wall)
+          (append (build-list (- XMAX 5) (lambda (x) u-wall-field-d-wall))
+                  (list lr-wall lr-wall lr-wall))))
 ;; 迷路の初期状態
 (define maze (maze-set (maze-set maze0 2 3 0) (- XMAX 2) (- YMAX 3) 0))
 
